@@ -2,9 +2,11 @@ require 'aws-sdk'
 
 require 'json'
 creds = JSON.load(File.read('secrets.json'))
-Aws.config[:credentials] = Aws::Credentials.new(creds['AccessKeyId'], creds['SecretAccessKey'])
+Aws.config[:credentials] = Aws::Credentials.new(
+  creds['AccessKeyId'],
+  creds['SecretAccessKey']
+)
 Aws.config[:region] = 'us-east-1'
-
 
 Client = Aws::CognitoIdentityProvider::Client.new
 
@@ -24,4 +26,21 @@ def auth(username, password)
     })
 end
 
-p auth('erica', 'fish1234')
+token = auth('erica', 'fish1234')
+#require 'byebug'
+#byebug
+authentication_result = token.authentication_result.to_hash
+
+access_token = authentication_result[:access_token]
+id_token = authentication_result[:id_token]
+refresh_token = authentication_result[:refresh_token]
+
+puts "access token:\t#{access_token.size}"
+puts "id token:\t#{id_token.size}"
+puts "refresh token:\t#{refresh_token.size}"
+puts "total size:\t#{access_token.size + id_token.size + refresh_token.size}"
+
+
+
+
+#p token.size
